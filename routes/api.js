@@ -86,7 +86,7 @@ router.post('/register', function(req, res, next) {
 
 
 // contact
-router.get('/contact/:paginate', function(req, res, next){
+router.get('/contact/:paginate', isAuthenticated, function(req, res, next){
   db.contact.find({}).skip(parseInt(req.params.paginate)).limit(10).exec(function(err, data){
     if(data){
       res.json({success: true, data: data});
@@ -94,7 +94,7 @@ router.get('/contact/:paginate', function(req, res, next){
   });
 });
 
-router.get('/contact/search/:filter/:keyword/:paginate', function(req, res, next){
+router.get('/contact/search/:filter/:keyword/:paginate', isAuthenticated, function(req, res, next){
   if (req.params.filter === "title") {
     db.contact.aggregate([
       {$match: {title: {$regex: req.params.keyword}} }
@@ -134,7 +134,7 @@ router.get('/contact/search/:filter/:keyword/:paginate', function(req, res, next
   }
 });
 
-router.post('/contact', function(req, res, next){
+router.post('/contact', isAuthenticated, function(req, res, next){
   req.checkBody('title', 'Title is required').notEmpty();
   req.checkBody('name', 'Name is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty();
@@ -166,7 +166,7 @@ router.post('/contact', function(req, res, next){
   }
 });
 
-router.put('/contact/:id', function(req, res, next){
+router.put('/contact/:id', isAuthenticated, function(req, res, next){
   req.checkBody('title', 'Title is required').notEmpty();
   req.checkBody('name', 'Name is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty().isEmail();
@@ -195,7 +195,7 @@ router.put('/contact/:id', function(req, res, next){
   }
 });
 
-router.delete('/contact/:id', function(req, res, next){
+router.delete('/contact/:id', isAuthenticated, function(req, res, next){
   db.contact.findOneAndRemove({_id: req.params.id}, function(err, data){
     if(err) return res.status(401).send();
     res.json({success: true, message: "Berhasil delete contact"});
